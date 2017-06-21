@@ -61,16 +61,17 @@ class Ui_Monitor(object):
         self.plot_tVh.setParent(Monitor)
 
         self.retranslateUi(Monitor)
-        QtCore.QObject.connect(self.exit_but, QtCore.SIGNAL(_fromUtf8("clicked()")), Monitor.close)
+        #QtCore.QObject.connect(self.exit_but, QtCore.SIGNAL(_fromUtf8("clicked()")), Monitor.close)
         QtCore.QMetaObject.connectSlotsByName(Monitor)
 
     def retranslateUi(self, Monitor):
         Monitor.setWindowTitle(_translate("Monitor", "Form", None))
         self.supply_dis.setText(_translate("Dialog", "Current Supply: OFF", None))
         self.I_on_but.setText(_translate("Dialog", "ON", None))
-        self.I_up_but.setText(_translate("Dialog", "UPDATE", None))
+        self.I_up_but.setText(_translate("Dialog", "SET RAMP", None))
         self.I_off_but.setText(_translate("Dialog", "OFF", None))
         self.exit_but.setText(_translate("Dialog", "EXIT", None))
+        self.meas_but.setText(_translate("Dialog", "MEASURE", None))
         self.ramp_lab.setText(_translate("Dialog", "Ramp Rate [A/sec]:", None))
 
     def setrunning(self, mainwin):
@@ -102,8 +103,12 @@ class Ui_Monitor(object):
         self.I_off_but.setGeometry(QtCore.QRect(90, 300, 200, 40))
         self.I_off_but.setFont(font)
         self.I_off_but.setObjectName(_fromUtf8("I_off_but"))
+        self.meas_but = QtGui.QPushButton(mainwin)
+        self.meas_but.setGeometry(QtCore.QRect(90, 360, 200, 40))
+        self.meas_but.setFont(font)
+        self.meas_but.setObjectName(_fromUtf8("I_off_but"))
         self.exit_but = QtGui.QPushButton(mainwin)
-        self.exit_but.setGeometry(QtCore.QRect(90, 370, 200, 40))
+        self.exit_but.setGeometry(QtCore.QRect(90, 410, 200, 40))
         font = QtGui.QFont()
         font.setPointSize(15)
         font.setBold(False)
@@ -118,8 +123,9 @@ class Ui_Monitor(object):
 
     def setramprate(self, win):
         self.ramp_box = QtGui.QDoubleSpinBox(win)
-        self.ramp_box.setEnabled(False)
+        self.ramp_box.setEnabled(True)
         self.ramp_box.setGeometry(QtCore.QRect(180, 130, 120, 30))
+        self.ramp_box.setProperty("value", 0.1)
         font = QtGui.QFont()
         font.setPointSize(18)
         self.ramp_box.setFont(font)
