@@ -126,6 +126,10 @@ class HtsMeasurement(QtCore.QThread):
                     self.power_off()
                     print " -- reached the upper limit."
                     print " -- I: %.4f [A], V: %.4f [V]" %(rI, rV)
+                if v2>parameter.protect:
+                    self.power_off()
+                    print " -- exceeded the protection voltage."
+                    print " -- current voltage: %.4f V, protection voltage: %.4f V" %(v2,parameter.protect)
                 self.curr.SetSmartCurrent(I)
                 self.curr_sig.emit(rV, rI)
                 time.sleep(0.01)
@@ -161,10 +165,9 @@ class HDaqGuiHandle(QtGui.QMainWindow, HtsDaqGuiBase.Ui_Monitor):
         self.setupUi(self)
         self._data = {"time":np.array([]), "hts":np.array([]), "prot":np.array([]), "curr":np.array([])}
         nowtime = datetime.datetime.now()
-        self._prot = 1.
         self._start = nowtime
         self.setup()
-        #self._file = open( parameter.path+"/meas%s.dat" %(nowtime.strftime("%Y%m%d_%H%M%S")), "w" )
+        self._file = open( parameter.path+"/meas%s.dat" %(nowtime.strftime("%Y%m%d_%H%M%S")), "w" )
 
     ## setup
     def setup(self):
@@ -234,6 +237,7 @@ class HDaqGuiHandle(QtGui.QMainWindow, HtsDaqGuiBase.Ui_Monitor):
     @QtCore.pyqtSlot()
     def daq_quit(self):
         self._meas.stop_daq()
+        self._file.close()
         self._meas.wait()
         self.close()
 
@@ -252,7 +256,7 @@ class HDaqGuiHandle(QtGui.QMainWindow, HtsDaqGuiBase.Ui_Monitor):
         self._data[ "hts"] = np.append( self._data[ "hts"], v1 )
         self._data["prot"] = np.append( self._data["prot"], v2 )
         self._data["curr"] = np.append( self._data["curr"], v3/parameter.shuntres )
-        self._prot = v2
+        self._file.write("%.5e   %.5e    %.5e\n" %(v1,v2,v3/parameter.shuntres) )
         #print "%.2f  %.2f  %.2f" %(v1, v2, v3)
         self.draw()
 
